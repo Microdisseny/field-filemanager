@@ -107,6 +107,11 @@ export default {
       type: Number,
       default: 30
     },
+    apiHeaders: {
+      type: Object,
+      required: false,
+      default: {}
+    },
     maxUploadRetries: {
       type: Number,
       default: 3
@@ -126,7 +131,7 @@ export default {
     }
   },
   created () {
-    API.config({ apiUrl: this.apiUrl, timeout: this.apiTimeout })
+    API.config({ apiUrl: this.apiUrl, timeout: this.apiTimeout, apiHeaders: this.apiHeaders })
     this.getDocuments()
     // Synchronize with server to get other users uploads
     setInterval(() => this.getDocuments(), this.refreshEvery * 1000)

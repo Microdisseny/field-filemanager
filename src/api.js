@@ -4,10 +4,14 @@ import urljoin from 'url-join'
 export default {
   apiUrl: '',
   apiTimeout: 30 * 1000,
+  apiHeaders: {},
   config (config) {
     this.apiUrl = config.apiUrl
     if ('apiTimeout' in config) {
       this.apiTimeout = config.apiTimeout * 1000
+    }
+    if ('apiHeaders' in config) {
+      this.apiHeaders = config.apiHeaders
     }
   },
   cancelUpload (uploadInfo) {
@@ -18,7 +22,10 @@ export default {
   cancelUploadTokens: {},
   listFiles () {
     return new Promise((resolve, reject) => {
-      axios.get(this.apiUrl)
+      const config = {
+        headers: this.apiHeaders
+      }
+      axios.get(this.apiUrl, config)
         .then(response => {
           resolve(response.data)
         })
@@ -35,7 +42,7 @@ export default {
     return new Promise((resolve, reject) => {
       const config = {
         timeout: this.apiTimeout,
-        headers: {},
+        headers: this.apiHeaders,
         onUploadProgress: (progressEvent) => {
           uploadInfo.uploadPercentage = (progressEvent.loaded * 100) / progressEvent.total
         },
@@ -65,7 +72,10 @@ export default {
   deleteFile (fileName) {
     return new Promise((resolve, reject) => {
       const url = urljoin(this.apiUrl, fileName)
-      axios.delete(url)
+      const config = {
+        headers: this.apiHeaders
+      }
+      axios.delete(url, config)
         .then(response => {
           resolve(response.data)
         })
