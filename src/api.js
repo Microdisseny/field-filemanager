@@ -1,10 +1,14 @@
 import axios from 'axios'
 import urljoin from 'url-join'
 
-export default {
-  apiUrl: '',
-  apiTimeout: 30 * 1000,
-  apiHeaders: {},
+class API {
+  constructor (config) {
+    this.apiUrl = ''
+    this.apiTimeoutm = 30 * 1000
+    this.apiHeaders = {}
+    this.cancelUploadTokens = {}
+    this.config(config)
+  }
   config (config) {
     this.apiUrl = config.apiUrl
     if ('apiTimeout' in config) {
@@ -13,19 +17,15 @@ export default {
     if ('apiHeaders' in config) {
       this.apiHeaders = config.apiHeaders
     }
-  },
+  }
   cancelUpload (uploadInfo) {
     if (uploadInfo.name in this.cancelUploadTokens) {
       this.cancelUploadTokens[uploadInfo.name].cancel()
     }
-  },
-  cancelUploadTokens: {},
+  }
   listFiles () {
     return new Promise((resolve, reject) => {
-      const config = {
-        headers: this.apiHeaders
-      }
-      axios.get(this.apiUrl, config)
+      axios.get(this.apiUrl)
         .then(response => {
           resolve(response.data)
         })
@@ -34,7 +34,7 @@ export default {
           reject(error)
         })
     })
-  },
+  }
   uploadFile (uploadInfo) {
     const CancelToken = axios.CancelToken
     const source = CancelToken.source()
@@ -42,7 +42,7 @@ export default {
     return new Promise((resolve, reject) => {
       const config = {
         timeout: this.apiTimeout,
-        headers: this.apiHeaders,
+        headers: {},
         onUploadProgress: (progressEvent) => {
           uploadInfo.uploadPercentage = (progressEvent.loaded * 100) / progressEvent.total
         },
@@ -68,14 +68,11 @@ export default {
           }
         })
     })
-  },
+  }
   deleteFile (fileName) {
     return new Promise((resolve, reject) => {
       const url = urljoin(this.apiUrl, fileName)
-      const config = {
-        headers: this.apiHeaders
-      }
-      axios.delete(url, config)
+      axios.delete(url)
         .then(response => {
           resolve(response.data)
         })
@@ -86,3 +83,5 @@ export default {
     })
   }
 }
+
+export default API
