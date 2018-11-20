@@ -335,9 +335,16 @@ export default {
   color: red !important;
 }
 
+.document-name {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
 .document-name a {
   color: black;
   text-decoration: none;
+  display: inline-flex;
 }
 
 .document-image {
@@ -346,11 +353,15 @@ export default {
   padding: 0px;
   margin: auto;
   line-height: 240px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
 }
 
 .document-image a {
   color: black;
   text-decoration: none;
+  display: inline-flex;
 }
 
 .document-image img,
