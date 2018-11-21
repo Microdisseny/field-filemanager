@@ -1,10 +1,14 @@
 import axios from 'axios'
 import urljoin from 'url-join'
 
-export default {
-  apiUrl: '',
-  apiTimeout: 30 * 1000,
-  apiHeaders: {},
+class API {
+  constructor (config) {
+    this.apiUrl = ''
+    this.apiTimeoutm = 30 * 1000
+    this.apiHeaders = {}
+    this.cancelUploadTokens = {}
+    this.config(config)
+  }
   config (config) {
     this.apiUrl = config.apiUrl
     if ('apiTimeout' in config) {
@@ -13,13 +17,12 @@ export default {
     if ('apiHeaders' in config) {
       this.apiHeaders = config.apiHeaders
     }
-  },
+  }
   cancelUpload (uploadInfo) {
     if (uploadInfo.name in this.cancelUploadTokens) {
       this.cancelUploadTokens[uploadInfo.name].cancel()
     }
-  },
-  cancelUploadTokens: {},
+  }
   listFiles () {
     return new Promise((resolve, reject) => {
       const config = {
@@ -34,7 +37,7 @@ export default {
           reject(error)
         })
     })
-  },
+  }
   uploadFile (uploadInfo) {
     const CancelToken = axios.CancelToken
     const source = CancelToken.source()
@@ -68,7 +71,7 @@ export default {
           }
         })
     })
-  },
+  }
   deleteFile (fileName) {
     return new Promise((resolve, reject) => {
       const url = urljoin(this.apiUrl, fileName)
@@ -86,3 +89,5 @@ export default {
     })
   }
 }
+
+export default API

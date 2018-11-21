@@ -109,8 +109,7 @@ export default {
     },
     apiHeaders: {
       type: Object,
-      required: false,
-      default: {}
+      required: false
     },
     maxUploadRetries: {
       type: Number,
@@ -131,7 +130,7 @@ export default {
     }
   },
   created () {
-    API.config({ apiUrl: this.apiUrl, timeout: this.apiTimeout, apiHeaders: this.apiHeaders })
+    this.api = new API({ apiUrl: this.apiUrl, timeout: this.apiTimeout, apiHeaders: this.apiHeaders || {} })
     this.getDocuments()
     // Synchronize with server to get other users uploads
     setInterval(() => this.getDocuments(), this.refreshEvery * 1000)
@@ -155,12 +154,12 @@ export default {
   },
   methods: {
     cancelUpload (upload) {
-      API.cancelUpload(upload)
+      this.api.cancelUpload(upload)
     },
     deleteDocument (document) {
       const res = confirm('Are you sure to delete [' + document.name + ']?')
       if (res) {
-        API.deleteFile(document.name)
+        this.api.deleteFile(document.name)
           .then(data => {
             this.getDocuments()
           })
@@ -170,7 +169,7 @@ export default {
       }
     },
     getDocuments () {
-      API.listFiles()
+      this.api.listFiles()
         .then(data => {
           if (Array.isArray(data)) {
             this.documents = data
@@ -215,7 +214,7 @@ export default {
     },
     uploadFile (uploadInfo) {
       this.uploadingFiles += 1
-      API.uploadFile(uploadInfo)
+      this.api.uploadFile(uploadInfo)
         .then((data) => {
           uploadInfo.completed = true
           uploadInfo.message = `Completed ${uploadInfo.name}`
