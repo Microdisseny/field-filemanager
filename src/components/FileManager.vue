@@ -28,7 +28,7 @@
         <div
           v-for="upload in uploads"
           :key="'upload-' + upload.name"
-          class="document"
+          class="document ie11hack"
           :class="{'error': upload.retry >= maxUploadRetries}"
           >
           <div v-if='!upload.completed && upload.uploadPercentage && upload.uploadPercentage > 0 && upload.uploadPercentage < 100'
@@ -61,7 +61,7 @@
           <div
             v-for="document in documents"
             :key="'document-' + document.name"
-            class="document"
+            class="document ie11hack"
             >
               <div
                 class="document-delete"
@@ -278,7 +278,11 @@ export default {
   }
 }
 </script>
-
+<style>
+_:-ms-fullscreen, :root .ie11hack {
+  margin: 0 0 20px 20px;
+}
+</style>
 <style scoped>
 .drop-area-title {
   text-align: center;
@@ -313,16 +317,17 @@ export default {
 }
 
 .documents {
+  display: flex;
+  flex-wrap: wrap;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  grid-template-rows: minmax(200px auto);
-  grid-auto-rows: minmax(200px, auto);
+  grid-template-rows: minmax(250px, auto);
+  grid-auto-rows: minmax(250px, auto);
   grid-gap: 20px;
   padding: 20px;
 }
 
-.document,
-.upload {
+.document{
   color: black;
   border: 1px solid #EEEEEE;
   border-radius: 10px;

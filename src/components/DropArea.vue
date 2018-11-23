@@ -68,6 +68,10 @@ export default {
         .then(files => {
           this.$emit('newFiles', Array.from(files))
         })
+        .catch(() => {
+          const files = event.dataTransfer.files
+          this.$emit('newFiles', Array.from(files))
+        })
     },
     onDragEnter () {
       this.dragEnterCounter++
@@ -83,7 +87,7 @@ export default {
 <style>
 .drop-area {
   border: 2px dashed #666;
-  border-radius: 50px;
+  border-radius: 25px;
 }
 .drop-area.drag-over {
   border: 2px dashed #129d57;
