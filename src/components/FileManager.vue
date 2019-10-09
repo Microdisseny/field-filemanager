@@ -1,12 +1,19 @@
 <template>
     <drop-area
+        data-field-filemanager-style
         @newFiles="queueFiles">
       <div class="drop-area-title">
-        <slot name="dropAreaTitle">
-          <h3>
-            Upload new file
-          </h3>
-        </slot>
+          <slot name="dropAreaHeader">
+          <div class='col1'>&nbsp;</div>
+          <div class='col2'>
+            <slot name="dropAreaTitle">
+              <h3>
+                Upload new file
+              </h3>
+            </slot>
+          </div>
+          <file-input-button class='col3' @change="queueFiles"></file-input-button>
+          </slot>
       </div>
     <div class="documents-errors">
       <div
@@ -89,6 +96,7 @@ import orderBy from 'orderby'
 import API from '../api.js'
 import DropArea from './DropArea.vue'
 import DeleteIcon from './../assets/cancel.svg'
+import FileInputButton from './FileInputButton.vue'
 import GenericFileImage from './../assets/file.svg'
 
 export default {
@@ -96,6 +104,7 @@ export default {
   components: {
     DropArea,
     DeleteIcon,
+    FileInputButton,
     GenericFileImage
   },
   props: {
@@ -283,132 +292,145 @@ _:-ms-fullscreen, :root .ie11hack {
   margin: 0 0 20px 20px;
 }
 </style>
-<style scoped>
-.drop-area-title {
-  text-align: center;
-}
+<style lang="stylus">
+[data-field-filemanager-style]
+  .drop-area-title {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-gap: 10px;
+    color: #2c3e50;
+  }
 
-.documents-errors{
-  color: red;
-  text-align: left;
-  padding-left: 20px;
-  padding-right: 20px;
-  display: table;
-}
+  .drop-area-title h3 {
+    font-size: 1.17em;
+    font-weight: bold;
+  }
 
-.error-delete {
-  display: table-cell;
-  cursor: pointer;
-  vertical-align: middle;
-}
+  .drop-area-title .col3 {
+    text-align: right;
+  }
 
-.error-delete svg{
-  fill: red;
-}
+  .documents-errors {
+    color: red;
+    text-align: left;
+    padding-left: 20px;
+    padding-right: 20px;
+    display: table;
+  }
 
-.error-message{
-  display: table-cell;
-  vertical-align: middle;
-  padding-left: 10px;
-}
+  .error-delete {
+    display: table-cell;
+    cursor: pointer;
+    vertical-align: middle;
+  }
 
-.documents-container {
-  min-height: 400px;
-}
+  .error-delete svg {
+    fill: red;
+  }
 
-.documents {
-  display: flex;
-  flex-wrap: wrap;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  grid-template-rows: minmax(250px, auto);
-  grid-auto-rows: minmax(250px, auto);
-  grid-gap: 20px;
-  padding: 20px;
-}
+  .error-message {
+    display: table-cell;
+    vertical-align: middle;
+    padding-left: 10px;
+  }
 
-.document{
-  color: black;
-  border: 1px solid #EEEEEE;
-  border-radius: 10px;
-  padding: 5px;
-  display: inline-block;
-  position: relative;
-}
+  .documents-container {
+    min-height: 400px;
+  }
 
-.document.error .document-name {
-  color: red !important;
-}
+  .documents {
+    display: flex;
+    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-rows: minmax(250px, auto);
+    grid-auto-rows: minmax(250px, auto);
+    grid-gap: 20px;
+    padding: 20px;
+  }
 
-.document-name {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
+  .document {
+    color: black;
+    border: 1px solid #EEEEEE;
+    border-radius: 10px;
+    padding: 5px;
+    display: inline-block;
+    position: relative;
+  }
 
-.document-name a {
-  color: black;
-  text-decoration: none;
-  display: inline-flex;
-}
+  .document.error .document-name {
+    color: red !important;
+  }
 
-.document-image {
-  width: 240px;
-  height: 240px;
-  padding: 0px;
-  margin: auto;
-  line-height: 240px;
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
+  .document-name {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
 
-.document-image a {
-  color: black;
-  text-decoration: none;
-  display: inline-flex;
-}
+  .document-name a {
+    color: black;
+    text-decoration: none;
+    display: inline-flex;
+  }
 
-.document-image img,
-.document-image svg {
-  max-width: 240px;
-  max-height: 240px;
-  vertical-align: middle;
-}
+  .document-image {
+    width: 240px;
+    height: 240px;
+    padding: 0px;
+    margin: auto;
+    line-height: 240px;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
 
-.document-delete {
-  position: absolute;
-  width: 48px;
-  height: 48px;
-  cursor: pointer;
-  top: 10px;
-  right: 0px;
-}
+  .document-image a {
+    color: black;
+    text-decoration: none;
+    display: inline-flex;
+  }
 
-.document-loading {
-  position: relative;
-  border: 1px solid #EEEEEE;
-  top: 0px;
-  left: 0px;
-  height: 4px;
-  border-radius: 2px;
-}
+  .document-image img,
+  .document-image svg {
+    max-width: 240px;
+    max-height: 240px;
+    vertical-align: middle;
+  }
 
-.document-loading-loading {
-  position: absolute;
-  background-color: blue;
-  width: 0%;
-  height: 4px;
-  border-radius: 2px;
-}
+  .document-delete {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    cursor: pointer;
+    top: 10px;
+    right: 0px;
+  }
 
-.generic-file-image {
-  width: 96px;
-  height: 96px;
-}
+  .document-loading {
+    position: relative;
+    border: 1px solid #EEEEEE;
+    top: 0px;
+    left: 0px;
+    height: 4px;
+    border-radius: 2px;
+  }
 
-.delete-icon {
-  width: 24px;
-  height: 24px;
-}
+  .document-loading-loading {
+    position: absolute;
+    background-color: blue;
+    width: 0%;
+    height: 4px;
+    border-radius: 2px;
+  }
+
+  .generic-file-image {
+    width: 96px;
+    height: 96px;
+  }
+
+  .delete-icon {
+    width: 24px;
+    height: 24px;
+  }
 </style>

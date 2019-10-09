@@ -1,6 +1,6 @@
 {
   "name": "field-filemanager",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -10,23 +10,28 @@
     "lint-fix": "eslint --ext .js,.vue src --fix"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "file-saver": "1.3.8",
     "orderby": "^1.1.0",
-    "url-join": "^4.0.0",
-    "vue": "^2.5.17"
+    "style-resources-loader": "^1.2.1",
+    "url-join": "^4.0.1",
+    "vue": "^2.6.10",
+    "vue-cli-plugin-style-resources-loader": "^0.1.3"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.0.4",
-    "@vue/cli-plugin-eslint": "^3.0.5",
-    "@vue/cli-service": "^3.0.4",
+    "@vue/cli-plugin-babel": "^3.11.0",
+    "@vue/cli-plugin-eslint": "^3.11.0",
+    "@vue/cli-service": "^3.11.0",
     "@vue/eslint-config-standard": "^3.0.5",
-    "eslint": "^5.8.0",
-    "eslint-plugin-node": "^8.0.0",
-    "eslint-plugin-promise": "^4.0.1",
-    "eslint-plugin-standard": "^4.0.0",
-    "vue-eslint-parser": "^3.2.2",
-    "vue-svg-loader": "^0.11.0"
+    "eslint": "^5.16.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "stylus": "^0.54.7",
+    "stylus-loader": "^3.0.2",
+    "vue-eslint-parser": "^3.3.0",
+    "vue-svg-loader": "^0.11.0",
+    "vue-template-compiler": "^2.6.10"
   },
   "eslintConfig": {
     "root": true,

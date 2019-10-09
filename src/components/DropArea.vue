@@ -83,15 +83,15 @@ export default {
   }
 }
 </script>
-
-<style>
-.drop-area {
-  border: 2px dashed #666;
-  border-radius: 25px;
-}
-.drop-area.drag-over {
-  border: 2px dashed #129d57;
-  background-color: #129d5736;
-  color: #129d57;
-}
+<style lang="stylus">
+[data-field-filemanager-style]
+  &.drop-area {
+    border: 2px dashed #666;
+    border-radius: 25px;
+  }
+  &.drop-area.drag-over {
+    border: 2px dashed #129d57;
+    background-color: #129d5736;
+    color: #129d57;
+  }
 </style>
