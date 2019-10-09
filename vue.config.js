@@ -19,5 +19,11 @@ module.exports = {
     svgRule
       .use('vue-svg-loader')
       .loader('vue-svg-loader')
+  },
+  pluginOptions: {
+    "style-resources-loader": {
+      preProcessor: "stylus",
+      patterns: []
+    }
   }
 }
