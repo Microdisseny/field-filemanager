@@ -31,7 +31,7 @@
       </div>
     </div>
     <div class="documents-container">
-      <div class="documents">
+      <div class="documents" v-mysortable:[documents]="{onUpdate: onUpdate}">
         <div
           v-for="upload in uploads"
           :key="'upload-' + upload.name"
@@ -58,7 +58,7 @@
               >
               </div>
             </div>
-            <div class="document-image">
+            <div class="document-image handle">
               <GenericFileImage class="generic-file-image" />
             </div>
               <div class="document-name">
@@ -92,15 +92,21 @@
 </template>
 
 <script>
-import orderBy from 'orderby'
 import API from '../api.js'
-import DropArea from './DropArea.vue'
 import DeleteIcon from './../assets/cancel.svg'
 import FileInputButton from './FileInputButton.vue'
+import DropArea from './DropArea.vue'
 import GenericFileImage from './../assets/file.svg'
+import Sortable from 'vue-sortable'
+import sortableDirective from './../directives/sortable.directive'
+import orderBy from 'orderby'
 
 export default {
   name: 'filemanager',
+  directives: {
+    sortableDirective,
+    Sortable
+  },
   components: {
     DropArea,
     DeleteIcon,
@@ -162,6 +168,11 @@ export default {
     }
   },
   methods: {
+    onUpdate: function (event) {
+      console.log('hola')
+      this.documents.splice(event.newIndex, 0, this.documents.splice(event.oldIndex, 1)[0])
+      console.log(this.documents)
+    },
     cancelUpload (upload) {
       this.api.cancelUpload(upload)
     },
