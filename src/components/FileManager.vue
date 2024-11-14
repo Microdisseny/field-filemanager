@@ -12,13 +12,16 @@
               </h3>
             </slot>
           </div>
-          <file-input-button class='col3' @change="queueFiles"></file-input-button>
+          <file-input-button
+            class='col3'
+            @change="queueFiles"
+            :id="uniqueId"></file-input-button>
           </slot>
       </div>
     <div class="documents-errors">
       <div
         v-for="(error, index) in errors"
-        :key="'error-'+ index"
+        :key="'error-'+ uniqueId + '-' + index"
         class="document-error-message"
         >
         <div
@@ -34,7 +37,7 @@
       <div class="documents">
         <div
           v-for="upload in uploads"
-          :key="'upload-' + upload.name"
+          :key="'upload-' + uniqueId + '-' + upload.name"
           class="document ie11hack"
           :class="{'error': upload.retry >= maxUploadRetries}"
           >
@@ -67,7 +70,7 @@
           </div>
           <div
             v-for="document in documents"
-            :key="'document-' + document.name"
+            :key="'document-' + uniqueId + '-' + document.name"
             class="document ie11hack"
             >
               <div
@@ -98,6 +101,8 @@ import DropArea from './DropArea.vue'
 import DeleteIcon from './../assets/cancel.svg'
 import FileInputButton from './FileInputButton.vue'
 import GenericFileImage from './../assets/file.svg'
+
+import { v4 as uuidv4 } from 'uuid'
 
 export default {
   name: 'filemanager',
@@ -155,6 +160,7 @@ export default {
   },
   data () {
     return {
+      uniqueId: `file-uploader-${uuidv4()}`,
       errors: [],
       uploads: [],
       documents: [],
