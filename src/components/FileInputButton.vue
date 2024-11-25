@@ -1,16 +1,10 @@
 <template>
   <div>
-    <label :for="id" class="file-button">
+    <label for="uploadFile" class="file-button">
       <upload-button class="upload-button-icon" />
     </label>
-    <input
-      :id="id"
-      type="file"
-      ref="uploadFile"
-      @change="onChange"
-      multiple="multiple"
-      style="display: none"
-    />
+    <input id="uploadFile" type="file" ref="uploadFile" @change="onChange" multiple="multiple"
+      style="display: none"/>
   </div>
 </template>
 
@@ -18,7 +12,6 @@
 import UploadButton from './../assets/upload_button.svg'
 
 export default {
-  props: ['id'],
   components: {
     UploadButton
   },
