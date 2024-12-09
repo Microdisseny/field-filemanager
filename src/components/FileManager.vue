@@ -155,6 +155,7 @@ export default {
   },
   data () {
     return {
+      api: null,
       errors: [],
       uploads: [],
       documents: [],
