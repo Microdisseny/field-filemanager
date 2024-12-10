@@ -1,9 +1,9 @@
 <template>
   <div>
-    <label for="uploadFile" class="file-button">
+    <label :for="'uploadFile-' + id" class="file-button">
       <upload-button class="upload-button-icon" />
     </label>
-    <input id="uploadFile" type="file" ref="uploadFile" @change="onChange" multiple="multiple"
+    <input :id="'uploadFile-' + id" type="file" ref="uploadFile" @change="onChange" multiple="multiple"
       style="display: none"/>
   </div>
 </template>
