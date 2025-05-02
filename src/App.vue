@@ -1,6 +1,7 @@
 <template>
   <div id="app">
-    <FileManager :apiUrl="apiUrl" :maxUploadRetries="maxUploadRetries"/>
+    <FileManager :apiUrl="apiUrl" :maxUploadRetries="maxUploadRetries" :default-display-mode="'list'" lang="ca"/>
+    <FileManager :apiUrl="apiUrl2" :maxUploadRetries="maxUploadRetries" :default-display-mode="'grid'" lang="ca"/>
   </div>
 </template>
 
@@ -15,6 +16,9 @@ export default {
   computed: {
     apiUrl () {
       return process.env.VUE_APP_API_URL
+    },
+    apiUrl2 () {
+      return process.env.VUE_APP_API_URL2
     },
     maxUploadRetries () {
       return parseInt(process.env.VUE_APP_MAX_UPLOAD_RETRIES)

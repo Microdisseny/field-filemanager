@@ -3,8 +3,15 @@
         data-field-filemanager-style
         @newFiles="queueFiles">
       <div class="drop-area-title">
-          <slot name="dropAreaHeader">
-          <div class='col1'>&nbsp;</div>
+        <slot name="dropAreaHeader">
+          <div class='col1 menu'>
+            <span v-if="displayMode == 'grid'" @click="setListMode" :title="t('show_list_title')">
+              <ListIcon class="menu-icon clickable"></ListIcon>
+            </span>
+            <span v-if="displayMode == 'list'" @click="setGridMode" :title="t('show_grid_title')">
+              <GridIcon class="menu-icon clickable"></GridIcon>
+            </span>
+          </div>
           <div class='col2'>
             <slot name="dropAreaTitle">
               <h3>
@@ -12,8 +19,8 @@
               </h3>
             </slot>
           </div>
-          <file-input-button class='col3' @change="queueFiles"></file-input-button>
-          </slot>
+          <file-input-button class='col3' @change="queueFiles" :title="t('upload_file_title')"></file-input-button>
+        </slot>
       </div>
     <div class="documents-errors">
       <div
@@ -31,62 +38,15 @@
       </div>
     </div>
     <div class="documents-container">
-      <div class="documents">
-        <div
-          v-for="upload in uploads"
-          :key="'upload-' + upload.name"
-          class="document ie11hack"
-          :class="{'error': upload.retry >= maxUploadRetries}"
-          >
-          <div v-if='!upload.completed && upload.uploadPercentage && upload.uploadPercentage > 0 && upload.uploadPercentage < 100'
-            class="document-delete"
-            @click="cancelUpload(upload)"
-            >
-            <DeleteIcon class="delete-icon" />
-          </div>
-          <div v-if='upload.retry >= maxUploadRetries'
-            class="document-delete"
-            @click="removeFromUploads(upload.name)"
-            >
-            <DeleteIcon class="delete-icon" />
-          </div>
-          <div class="document-loading" v-if='upload.uploadPercentage > 0'>
-            <div
-              v-if='upload.uploadPercentage < 100'
-              :style="{'width':  Math.floor(upload.uploadPercentage) + '%'}"
-              class="document-loading-loading"
-              >
-              </div>
-            </div>
-            <div class="document-image">
-              <GenericFileImage class="generic-file-image" />
-            </div>
-              <div class="document-name">
-                  {{ upload.name }}
-              </div>
-          </div>
-          <div
-            v-for="document in documents"
-            :key="'document-' + document.name"
-            class="document ie11hack"
-            >
-              <div
-                class="document-delete"
-                @click="deleteDocument(document)"
-                >
-                  <DeleteIcon class="delete-icon" />
-              </div>
-              <div class="document-image">
-                <a :href="document.file" target="_blank">
-                  <img v-if="document.thumbnail" :src="document.thumbnail">
-                  <GenericFileImage v-else class="generic-file-image" />
-                </a>
-              </div>
-              <div class="document-name">
-                <a :href="document.file" target="_blank">{{ document.name }}</a>
-              </div>
-            </div>
-      </div>
+      <component
+        :is="displayMode == 'grid' ? 'file-grid' : 'file-list'"
+        :uploads="uploads"
+        :documents="documents"
+        :max-upload-retries="maxUploadRetries"
+        @delete-document="deleteDocument"
+        @cancel-upload="cancelUpload"
+        @remove-from-uploads="removeFromUploads"
+      />
     </div>
     </drop-area>
 </template>
@@ -95,19 +55,28 @@
 import orderBy from 'orderby'
 import API from '../api.js'
 import DropArea from './DropArea.vue'
-import DeleteIcon from './../assets/cancel.svg'
 import FileInputButton from './FileInputButton.vue'
-import GenericFileImage from './../assets/file.svg'
+import FileGrid from './FileGrid.vue'
+import FileList from './FileList.vue'
+import ListIcon from './../assets/list.svg'
+import GridIcon from './../assets/grid.svg'
+import messages from '../i18n'
 
 export default {
   name: 'filemanager',
   components: {
     DropArea,
-    DeleteIcon,
+    FileGrid,
     FileInputButton,
-    GenericFileImage
+    FileList,
+    ListIcon,
+    GridIcon
   },
   props: {
+    defaultDisplayMode: {
+      type: String,
+      default: 'list' // 'list' or 'grid'
+    },
     apiUrl: {
       type: String,
       required: true
@@ -131,6 +100,10 @@ export default {
     refreshEvery: {
       type: Number,
       default: 30
+    },
+    lang: {
+      type: String,
+      default: 'en'
     }
   },
   computed: {
@@ -139,6 +112,7 @@ export default {
     }
   },
   created () {
+    this.$t = messages(this.lang)
     this.api = new API({ apiUrl: this.apiUrl, timeout: this.apiTimeout, apiHeaders: this.apiHeaders || {} })
     this.getDocuments()
     // Synchronize with server to get other users uploads
@@ -159,10 +133,14 @@ export default {
       errors: [],
       uploads: [],
       documents: [],
-      uploadingFiles: 0
+      uploadingFiles: 0,
+      displayMode: this.defaultDisplayMode
     }
   },
   methods: {
+    t (key) {
+      return this.$t(key)
+    },
     cancelUpload (upload) {
       this.api.cancelUpload(upload)
     },
@@ -284,6 +262,12 @@ export default {
           this.uploadFile(uploadInfo)
         }
       }
+    },
+    setGridMode () {
+      this.displayMode = 'grid'
+    },
+    setListMode () {
+      this.displayMode = 'list'
     }
   }
 }
@@ -336,85 +320,13 @@ _:-ms-fullscreen, :root .ie11hack {
   }
 
   .documents-container {
-    min-height: 400px;
-  }
-
-  .documents {
-    display: flex;
-    flex-wrap: wrap;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-template-rows: minmax(250px, auto);
-    grid-auto-rows: minmax(250px, auto);
-    grid-gap: 20px;
-    padding: 20px;
-  }
-
-  .document {
-    color: black;
-    border: 1px solid #EEEEEE;
-    border-radius: 10px;
-    padding: 5px;
-    display: inline-block;
-    position: relative;
+    min-height: 100px;
+    max-height: 500px;
+    overflow: auto;
   }
 
   .document.error .document-name {
     color: red !important;
-  }
-
-  .document-name {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-  }
-
-  .document-name a {
-    color: black;
-    text-decoration: none;
-    display: inline-flex;
-  }
-
-  .document-image {
-    width: 240px;
-    height: 240px;
-    padding: 0px;
-    margin: auto;
-    line-height: 240px;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-  }
-
-  .document-image a {
-    color: black;
-    text-decoration: none;
-    display: inline-flex;
-  }
-
-  .document-image img,
-  .document-image svg {
-    max-width: 240px;
-    max-height: 240px;
-    vertical-align: middle;
-  }
-
-  .document-delete {
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    cursor: pointer;
-    top: 10px;
-    right: 0px;
-  }
-
-  .document-loading {
-    position: relative;
-    border: 1px solid #EEEEEE;
-    top: 0px;
-    left: 0px;
-    height: 4px;
-    border-radius: 2px;
   }
 
   .document-loading-loading {
@@ -425,13 +337,28 @@ _:-ms-fullscreen, :root .ie11hack {
     border-radius: 2px;
   }
 
-  .generic-file-image {
-    width: 96px;
-    height: 96px;
-  }
-
   .delete-icon {
     width: 24px;
     height: 24px;
+  }
+
+  .menu {
+    display: flex;
+    margin: 10px 0px 0px 10px;
+  }
+
+  .menu-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
+
+  .document:hover {
+    border: 1px solid black;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+    background-color: #F5F5F5;
   }
 </style>
