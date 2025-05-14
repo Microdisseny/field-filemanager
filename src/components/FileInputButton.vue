@@ -44,8 +44,10 @@ export default {
   .upload-button-icon {
     padding: 0;
     margin: 0;
-    width: 48px;
-    height: 48px;
+    margin-top: 8px;
+    margin-right: 4px;
+    width: 32px;
+    height: 32px;
     cursor: pointer;
   }
 </style>
