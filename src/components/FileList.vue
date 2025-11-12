@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <!-- Uploads section (non-draggable) -->
     <div
       v-for="upload in uploads"
       :key="'upload-' + upload.name"
@@ -37,33 +38,44 @@
         <DeleteIcon class="delete-icon" />
       </div>
     </div>
-    <div
-      v-for="document in documents"
-      :key="'document-' + document.name"
-      class="document ie11hack"
+
+    <!-- Documents section (draggable) -->
+    <draggable
+      @end="onDragEnd"
+      :options="{animation: 200, handle: '.drag-handle', ghostClass: 'ghost', disabled: !isOrderingEnabled}"
+      class="draggable-container"
+      element="div"
       >
-      <div class="icon">
-        <a :href="document.file" target="_blank">
-          <component
-            :is="getFileIcon(document.name)"
-            class="extension-icon"
-          />
-        </a>
-      </div>
-      <div class="name">
-        <a :href="document.file" target="_blank">{{ document.name }}</a>
-      </div>
       <div
-        class="icon clickable"
-        @click="deleteDocument(document)"
+        v-for="document in documents"
+        :key="'document-' + document.name"
+        class="document ie11hack draggable-item drag-handle"
+        :class="{'draggable-disabled': !isOrderingEnabled}"
         >
-          <DeleteIcon class="delete-icon" />
+        <div class="icon">
+          <a :href="document.file" target="_blank">
+            <component
+              :is="getFileIcon(document.name)"
+              class="extension-icon"
+            />
+          </a>
+        </div>
+        <div class="name">
+          <a :href="document.file" target="_blank">{{ document.name }}</a>
+        </div>
+        <div
+          class="icon clickable"
+          @click="deleteDocument(document)"
+          >
+            <DeleteIcon class="delete-icon" />
+        </div>
       </div>
-    </div>
+    </draggable>
   </div>
 </template>
 
 <script>
+import draggable from 'vuedraggable'
 import DeleteIcon from './../assets/cancel.svg'
 import FileInputButton from './FileInputButton.vue'
 import {
@@ -85,6 +97,7 @@ import {
 export default {
   name: 'filemanager',
   components: {
+    draggable,
     DeleteIcon,
     FileInputButton,
     GenericFileIcon,
@@ -112,6 +125,10 @@ export default {
     maxUploadRetries: {
       type: Number,
       default: 3
+    },
+    isOrderingEnabled: {
+      type: Boolean,
+      default: true
     }
   },
   methods: {
@@ -123,6 +140,9 @@ export default {
     },
     cancelUpload (upload) {
       this.$emit('cancel-upload', upload)
+    },
+    onDragEnd (event) {
+      this.$emit('documents-reordered', event)
     },
     getFileIcon
   }
@@ -139,6 +159,11 @@ export default {
     grid-gap: 6px 20px;
     padding: 0px 20px 20px 20px;
   }
+
+  .draggable-container {
+    display: contents;
+  }
+
   .document {
     color: black;
     border: 1px solid #EEEEEE;
@@ -147,6 +172,29 @@ export default {
     display: flex;
     width: 100%;
     align-items: center;
+    transition: background-color 0.2s;
+
+    &.draggable-item {
+      cursor: grab;
+      &.draggable-disabled {
+        cursor: default;
+      }
+    }
+
+    &.ghost {
+      opacity: 0.5;
+      background-color: #f0f0f0;
+    }
+
+    .drag-handle {
+      padding: 0 5px;
+      display: flex;
+      align-items: center;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
 
     .icon {
       vertical-align: middle;
@@ -183,6 +231,10 @@ export default {
         text-decoration: none;
         display: block;
       }
+    }
+
+    .clickable {
+      cursor: pointer;
     }
   }
 </style>
