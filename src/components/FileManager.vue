@@ -43,16 +43,17 @@
         :uploads="uploads"
         :documents="documents"
         :max-upload-retries="maxUploadRetries"
+        :is-ordering-enabled="isOrderingEnabled"
         @delete-document="deleteDocument"
         @cancel-upload="cancelUpload"
         @remove-from-uploads="removeFromUploads"
+        @documents-reordered="changeDocumentOrder"
       />
     </div>
     </drop-area>
 </template>
 
 <script>
-import orderBy from 'orderby'
 import API from '../api.js'
 import DropArea from './DropArea.vue'
 import FileInputButton from './FileInputButton.vue'
@@ -104,11 +105,10 @@ export default {
     lang: {
       type: String,
       default: 'en'
-    }
-  },
-  computed: {
-    orderedDocuments () {
-      return orderBy(this.documents, 'name')
+    },
+    enableOrdering: {
+      type: Boolean,
+      default: true
     }
   },
   created () {
@@ -135,6 +135,18 @@ export default {
       documents: [],
       uploadingFiles: 0,
       displayMode: this.defaultDisplayMode
+    }
+  },
+  computed: {
+    isOrderingEnabled () {
+      // Check if ordering should be enabled based on prop
+      if (!this.enableOrdering) return false
+      // Check if the documents have an order field
+      if (this.documents && this.documents.length > 0) {
+        const doc = this.documents[0]
+        return doc.order !== undefined && doc.order !== null
+      }
+      return false
     }
   },
   methods: {
@@ -268,6 +280,11 @@ export default {
     },
     setListMode () {
       this.displayMode = 'list'
+    },
+    changeDocumentOrder (event) {
+      const movedDocument = this.documents.splice(event.oldIndex, 1)[0]
+      this.documents.splice(event.newIndex, 0, movedDocument)
+      this.api.reorderFile(movedDocument.id, event.newIndex + 1)
     }
   }
 }

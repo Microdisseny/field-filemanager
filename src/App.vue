@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <FileManager :apiUrl="apiUrl" :maxUploadRetries="maxUploadRetries" :default-display-mode="'list'" lang="ca"/>
-    <FileManager :apiUrl="apiUrl2" :maxUploadRetries="maxUploadRetries" :default-display-mode="'grid'" lang="ca"/>
+    <FileManager :apiUrl="apiUrl2" :maxUploadRetries="maxUploadRetries" :default-display-mode="'grid'" lang="ca" :enable-ordering="false"/>
   </div>
 </template>
 

@@ -88,6 +88,25 @@ class API {
         })
     })
   }
+  reorderFile (id, newIndex) {
+    return new Promise((resolve, reject) => {
+      const url = urljoin(this.apiUrl, id.toString(), 'set-order/')
+      const config = {
+        headers: this.apiHeaders
+      }
+      const data = {
+        order: newIndex
+      }
+      axios.patch(url, data, config)
+        .then(response => {
+          resolve(response.data)
+        })
+        .catch(thrown => {
+          const error = { error: 'error', rawError: thrown }
+          reject(error)
+        })
+    })
+  }
 }
 
 export default API
